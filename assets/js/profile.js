@@ -5,7 +5,7 @@ $(window).ready(function () {
 });
 
 
-var data = d3.csv("resume.csv", function(d){
+var data = d3.csv("profile.csv", function(d){
   console.log('d',d);
   var roleIDArr = [], jobLvlData = [];
   data = d.map(function (inner_d) {
@@ -41,6 +41,7 @@ function experienceChart( data ) {
   var xMax  = d3.max(data, function(c) { return c.TimeEnd.toDate() });
   var yMax  = d3.max(data, function(c) { return c.RoleID });
 
+// -----------needs dynamic margins, width, and height
   var margin = {top: 20, right: 20, bottom: 50, left: 70},
       width = 960 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
@@ -51,10 +52,12 @@ function experienceChart( data ) {
           .domain([0,data.length])
           .range(colors);
 
+//--------------needs dynamic range
   var xscale = d3.scaleTime()
                 .domain([xMin, xMax])
                 .range([0, 960]);
 
+//--------------needs dynamic range
   var yscale = d3.scaleBand()
                 .domain(data.map(function (d) { return d.Role; }))
                 .rangeRound([0, 300]);
@@ -78,7 +81,11 @@ function experienceChart( data ) {
       .attr("transform", "translate(40,0)")
       .call(d3.axisLeft(yscale))
     .selectAll(".tick text")
-      .call(wrap, 100);//replace with yscale ordinal range
+      .call(wrap, 100);//------------------replace with yscale ordinal range
+
+
+
+      //--------needs update function on browser resize
 }
 
 
