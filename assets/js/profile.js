@@ -32,7 +32,8 @@ var data = d3.csv("profile.csv", function(d){
     }
   });
 
-  experienceChart(jobLvlData);
+  // experienceChart(jobLvlData);
+  displayExperience(jobLvlData);
   // console.log('jobLvlData', jobLvlData);
 });
 
@@ -88,7 +89,158 @@ function experienceChart( data ) {
       //--------needs update function on browser resize
 }
 
+//--------------wrapper for responsive chart creation
+function displayExperience( data ) {
+  // // Parse the date / time
+  // var parseDate = d3.timeParse("%Y");
 
+  // won't need to force into key-value, handled in csv load
+  // // force types
+  // function type(dataArray) {
+  // 	dataArray.forEach(function(d) {
+  // 		d.year = parseDate(d.year);
+  // 		d.retention = +d.population;
+  // 	});
+  // 	return dataArray;
+  // }
+  // data = type(data);
+
+
+  //////////////////////////////////////////////
+  // Chart Config /////////////////////////////
+  //////////////////////////////////////////////
+
+  // Set the dimensions of the canvas / graph
+  var margin = {top: 30, right: 20, bottom: 30, left: 100},
+  		width, // width gets defined below
+      height = 250 - margin.top - margin.bottom;
+
+  // Set the scales ranges
+  var xScale = d3.scaleTime();
+  var yScale = d3.scaleBand().rangeRound([height, 0]);//.range([height, 0]);
+
+  // Define the axes
+  var xAxis = d3.axisBottom().scale(xScale);
+  var yAxis = d3.axisLeft().scale(yScale);
+
+  // create a line
+  // var line = d3.line();
+
+  // Add the svg canvas
+  var svg = d3.select("div#cvGannt")
+      .append("svg")
+  		.attr("height", height + margin.top + margin.bottom);
+
+  var artboard = svg.append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  // set the domain range from the data
+  xScale.domain([
+		d3.min(data, function(d) { return d.TimeStart.toDate(); }),
+		d3.max(data, function(d) { return d.TimeEnd.toDate(); })
+	]);
+  yScale.domain(data.map(function (d) { return d.Role; }));
+
+  // // draw the line created above
+  // var path = artboard.append("path").data([data])
+  //   .style('fill', 'none')
+  //   .style('stroke', 'steelblue')
+  //   .style('stroke-width', '2px');
+
+  // Add the X Axis
+  var xAxisEl = artboard.append("g")
+    .attr("transform", "translate(0," + height + ")");
+
+  // Add the Y Axis
+  // we aren't resizing height in this demo so the yAxis stays static, we don't need to call this every resize
+  var yAxisEl = artboard.append("g")
+    .call(yAxis);
+
+
+  // call this once to draw the chart initially
+  drawChart();
+
+  //////////////////////////////////////////////
+  // Drawing ///////////////////////////////////
+  //////////////////////////////////////////////
+  function drawChart() {
+    console.log('calling all charts!');
+    // reset the width
+    width = parseInt(d3.select("div#cvGannt").style('width'), 10) - margin.left - margin.right;
+
+    // set the svg dimensions
+    svg.attr("width", width + margin.left + margin.right);
+
+    // Set new range for xScale
+    xScale.range([0, width]);
+
+    // give the x axis the resized scale
+    xAxis.scale(xScale);
+
+    // draw the new xAxis
+    xAxisEl.call(xAxis);
+
+    yAxisEl.selectAll(".tick text")
+          .call(wrap, 100);//------------------replace with yscale ordinal range
+
+    // // specify new properties for the line
+    // line.x(function(d) { return xScale(d.year); })
+    //   .y(function(d) { return yScale(d.population); });
+
+    // // draw the path based on the line created above
+    // path.attr('d', line);
+  }
+
+
+
+  //////////////////////////////////////////////
+  // Resizing //////////////////////////////////
+  //////////////////////////////////////////////
+
+  // redraw chart on resize
+  APP.onResize(drawChart);
+}
+
+
+// Create APP container with debounce function so resize is not called excessively
+var APP = (function () {
+
+  // Debounce is a private function
+	function debounce(func, wait, immediate) {
+		var timeout;
+		return function() {
+			var context = this, args = arguments;
+			clearTimeout(timeout);
+			timeout = setTimeout(function() {
+				timeout = null;
+				if (!immediate) func.apply(context, args);
+			}, wait);
+			if (immediate && !timeout) func.apply(context, args);
+		};
+	}
+
+  // onResize function is made public
+	var me = {onResize : function(callback) {
+		callback(); // optionally execute callback func imediatly
+
+    window.addEventListener('resize', debounce(function() {
+      callback();
+    }, 60), false);
+	}};
+
+  // returns the me object that has all the public functions in it
+	return me;
+})();
+
+
+
+// var bodyEl = document.getElementsByTagName('body')[0];
+//
+// // Call onResize like this
+// APP.onResize(function() {
+//   // this stuff will be debounced
+//   bodyEl.innerHTML = 'The viewport width is: ' + window.innerWidth;
+// });
 
 function wrap(text, width) {
   text.each(function() {
