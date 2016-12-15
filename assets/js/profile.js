@@ -6,7 +6,7 @@ $(window).ready(function () {
 
 
 var data = d3.csv("profile.csv", function(d){
-  console.log('d',d);
+
   var roleIDArr = [], jobLvlData = [];
   data = d.map(function (inner_d) {
     // Only get rows with experience data
@@ -37,75 +37,9 @@ var data = d3.csv("profile.csv", function(d){
   // console.log('jobLvlData', jobLvlData);
 });
 
-function experienceChart( data ) {
-  var xMin  = d3.min(data, function(c) { return c.TimeStart.toDate() });
-  var xMax  = d3.max(data, function(c) { return c.TimeEnd.toDate() });
-  var yMax  = d3.max(data, function(c) { return c.RoleID });
-
-// -----------needs dynamic margins, width, and height
-  var margin = {top: 20, right: 20, bottom: 50, left: 70},
-      width = 960 - margin.left - margin.right,
-      height = 500 - margin.top - margin.bottom;
-
-  //---------------------Replace this with a real color scale
-  var colors = ['#0000b4','#0082ca','#0094ff','#0d4bcf','#0066AE','#074285','#00187B','#285964','#405F83'];
-  var colorScale = d3.scaleOrdinal()
-          .domain([0,data.length])
-          .range(colors);
-
-//--------------needs dynamic range
-  var xscale = d3.scaleTime()
-                .domain([xMin, xMax])
-                .range([0, 960]);
-
-//--------------needs dynamic range
-  var yscale = d3.scaleBand()
-                .domain(data.map(function (d) { return d.Role; }))
-                .rangeRound([0, 300]);
-
-  // append the svg obgect to the body of the page
-  // appends a 'group' element to 'svg'
-  // moves the 'group' element to the top left margin
-  var svg = d3.select("div#cvGannt").append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-      .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
-
-  // Add the x Axis
-  svg.append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(xscale));
-  // Add the y Axis
-  svg.append("g")
-      .attr("transform", "translate(40,0)")
-      .call(d3.axisLeft(yscale))
-    .selectAll(".tick text")
-      .call(wrap, 100);//------------------replace with yscale ordinal range
-
-
-
-      //--------needs update function on browser resize
-}
 
 //--------------wrapper for responsive chart creation
 function displayExperience( data ) {
-  // // Parse the date / time
-  // var parseDate = d3.timeParse("%Y");
-
-  // won't need to force into key-value, handled in csv load
-  // // force types
-  // function type(dataArray) {
-  // 	dataArray.forEach(function(d) {
-  // 		d.year = parseDate(d.year);
-  // 		d.retention = +d.population;
-  // 	});
-  // 	return dataArray;
-  // }
-  // data = type(data);
-
-
   //////////////////////////////////////////////
   // Chart Config /////////////////////////////
   //////////////////////////////////////////////
@@ -113,26 +47,23 @@ function displayExperience( data ) {
   // Set the dimensions of the canvas / graph
   var margin = {top: 30, right: 20, bottom: 30, left: 100},
   		width, // width gets defined below
-      height = 250 - margin.top - margin.bottom;
+      height = 450 - margin.top - margin.bottom;
 
   // Set the scales ranges
-  var xScale = d3.scaleTime();
-  var yScale = d3.scaleBand().rangeRound([height, 0]);//.range([height, 0]);
+  var xScale = d3.scaleTime(),
+      yScale = d3.scaleBand().rangeRound([0, height]);
 
   // Define the axes
-  var xAxis = d3.axisBottom().scale(xScale);
-  var yAxis = d3.axisLeft().scale(yScale);
+  var xAxis       = d3.axisBottom().scale( xScale );
+  var yAxis       = d3.axisLeft().scale( yScale );
+  var colorScale  = d3.scaleSequential(d3.interpolatePuBuGn);
 
-  // create a line
-  // var line = d3.line();
+console.log('scaleTest', colorScale(0.5));
 
   // Add the svg canvas
   var svg = d3.select("div#cvGannt")
       .append("svg")
   		.attr("height", height + margin.top + margin.bottom);
-
-  var artboard = svg.append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   // set the domain range from the data
   xScale.domain([
@@ -140,12 +71,12 @@ function displayExperience( data ) {
 		d3.max(data, function(d) { return d.TimeEnd.toDate(); })
 	]);
   yScale.domain(data.map(function (d) { return d.Role; }));
+  colorScale.domain([0, d3.max(data, function(d, i) { return i; })]);
 
-  // // draw the line created above
-  // var path = artboard.append("path").data([data])
-  //   .style('fill', 'none')
-  //   .style('stroke', 'steelblue')
-  //   .style('stroke-width', '2px');
+console.log('max record', d3.max(data, function(d, i) { return i; }));
+
+  var artboard = svg.append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   // Add the X Axis
   var xAxisEl = artboard.append("g")
@@ -156,7 +87,6 @@ function displayExperience( data ) {
   var yAxisEl = artboard.append("g")
     .call(yAxis);
 
-
   // call this once to draw the chart initially
   drawChart();
 
@@ -164,7 +94,6 @@ function displayExperience( data ) {
   // Drawing ///////////////////////////////////
   //////////////////////////////////////////////
   function drawChart() {
-    console.log('calling all charts!');
     // reset the width
     width = parseInt(d3.select("div#cvGannt").style('width'), 10) - margin.left - margin.right;
 
@@ -179,6 +108,30 @@ function displayExperience( data ) {
 
     // draw the new xAxis
     xAxisEl.call(xAxis);
+
+console.log('scaleTest', colorScale(0.5));
+    //Create bars
+    svg.append("g")
+       .attr("id", "bars")
+       .attr("transform", "translate(100," + margin.top + ")")//-------replace 100 with axis width
+       .selectAll("rect")
+       .data( data )
+       .enter()
+       .append("rect")
+       .attr("x", function (d) {
+         return xScale(d.TimeStart.toDate());
+       })
+       .attr("y", function(d) {
+         return yScale(d.Role);
+       })
+       .attr('width', function(d){
+         return xScale(d.TimeEnd.toDate());
+       })
+       .attr('height',20)
+       .attr('fill', function (d, i) {
+         return colorScale(i);
+       })
+       ;
 
     yAxisEl.selectAll(".tick text")
           .call(wrap, 100);//------------------replace with yscale ordinal range
@@ -232,15 +185,6 @@ var APP = (function () {
 	return me;
 })();
 
-
-
-// var bodyEl = document.getElementsByTagName('body')[0];
-//
-// // Call onResize like this
-// APP.onResize(function() {
-//   // this stuff will be debounced
-//   bodyEl.innerHTML = 'The viewport width is: ' + window.innerWidth;
-// });
 
 function wrap(text, width) {
   text.each(function() {
