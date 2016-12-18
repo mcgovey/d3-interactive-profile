@@ -54,11 +54,10 @@ function displayExperience( data ) {
       yScale = d3.scaleBand().rangeRound([0, height]);
 
   // Define the axes
-  var xAxis       = d3.axisBottom().scale( xScale );
-  var yAxis       = d3.axisLeft().scale( yScale );
-  var colorScale  = d3.scaleSequential(d3.interpolatePuBuGn);
-
-console.log('scaleTest', colorScale(0.5));
+  var xAxis       = d3.axisBottom().scale( xScale ),
+      yAxis       = d3.axisLeft().scale( yScale ),
+      colorScale  = d3.scaleSequential(d3.interpolatePuBuGn),
+      minDate     = d3.min(data, function(d) { return d.TimeStart.toDate(); });
 
   // Add the svg canvas
   var svg = d3.select("div#cvGannt")
@@ -67,14 +66,13 @@ console.log('scaleTest', colorScale(0.5));
 
   // set the domain range from the data
   xScale.domain([
-		d3.min(data, function(d) { return d.TimeStart.toDate(); }),
+		minDate,
 		d3.max(data, function(d) { return d.TimeEnd.toDate(); })
 	]);
   yScale.domain(data.map(function (d) { return d.Role; }));
   colorScale.domain([0, d3.max(data, function(d, i) { return i; })]);
 
-console.log('max record', d3.max(data, function(d, i) { return i; }));
-
+  // create element for where elements will be drawn
   var artboard = svg.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -109,11 +107,10 @@ console.log('max record', d3.max(data, function(d, i) { return i; }));
     // draw the new xAxis
     xAxisEl.call(xAxis);
 
-console.log('scaleTest', colorScale(0.5));
     //Create bars
     svg.append("g")
        .attr("id", "bars")
-       .attr("transform", "translate(100," + margin.top + ")")//-------replace 100 with axis width
+       .attr("transform", "translate(100," + (margin.top+margin.bottom) + ")")//-------replace 100 with axis width
        .selectAll("rect")
        .data( data )
        .enter()
@@ -125,12 +122,18 @@ console.log('scaleTest', colorScale(0.5));
          return yScale(d.Role);
        })
        .attr('width', function(d){
-         return xScale(d.TimeEnd.toDate());
+         var taskDuration = moment(moment(d.TimeStart).diff(minDate));
+         var barLength = moment(d.TimeEnd.diff(taskDuration));
+console.log('TimeStart',d.TimeStart.toDate(),'TimeEnd',d.TimeEnd.toDate(),'moment',moment().toDate());
+console.log('durations', moment(d.TimeStart).diff(minDate,'years',true), 'new dates', barLength.toDate());
+         return xScale(barLength.toDate());
        })
        .attr('height',20)
        .attr('fill', function (d, i) {
          return colorScale(i);
        })
+      .style("stroke", 'black')
+      .style("stroke-width", 0.25);
        ;
 
     yAxisEl.selectAll(".tick text")
