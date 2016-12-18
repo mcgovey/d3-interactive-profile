@@ -51,12 +51,13 @@ function displayExperience( data ) {
 
   // Set the scales ranges
   var xScale = d3.scaleTime(),
-      yScale = d3.scaleBand().rangeRound([0, height]);
+      yScale = d3.scaleBand().rangeRound([0, height]),
+      colorScale  = d3.scaleSequential(d3.interpolatePuBuGn);
 
   // Define the axes
   var xAxis       = d3.axisBottom().scale( xScale ),
-      yAxis       = d3.axisLeft().scale( yScale ),
-      colorScale  = d3.scaleSequential(d3.interpolatePuBuGn),
+      yAxis       = d3.axisLeft().scale( yScale )
+                      .tickSizeOuter(0),
       minDate     = d3.min(data, function(d) { return d.TimeStart.toDate(); });
 
   // Add the svg canvas
@@ -85,6 +86,29 @@ function displayExperience( data ) {
   var yAxisEl = artboard.append("g")
     .call(yAxis);
 
+    //Create bars
+    var bars = svg.append("g")
+       .attr("id", "bars")
+       .attr("transform", "translate(100," + (margin.top+margin.bottom) + ")")//-------replace 100 with axis width
+       .selectAll("rect")
+       .data( data )
+       .enter()
+       .append("rect")
+       .attr("x", function (d) {
+         return xScale(minDate);
+       })
+       .attr("y", function(d) {
+         return yScale(d.Role);
+       })
+       .attr('width', 0)
+       .attr('height', (height * .1))
+       .attr('fill', function (d, i) {
+         return colorScale(i);
+       })
+      .style("stroke", 'black')
+      .style("stroke-width", 0.25);
+       ;
+
   // call this once to draw the chart initially
   drawChart();
 
@@ -107,37 +131,25 @@ function displayExperience( data ) {
     // draw the new xAxis
     xAxisEl.call(xAxis);
 
+    // create transition
+    var t = d3.transition()
+      .duration(1500)
+      .ease(d3.easeLinear);
+
     //Create bars
-    svg.append("g")
-       .attr("id", "bars")
-       .attr("transform", "translate(100," + (margin.top+margin.bottom) + ")")//-------replace 100 with axis width
-       .selectAll("rect")
-       .data( data )
-       .enter()
-       .append("rect")
-       .attr("x", function (d) {
+    bars.transition(t)
+      .delay(function(d, i) { return i * 500; })
+      .attr("x", function (d) {
          return xScale(d.TimeStart.toDate());
        })
-       .attr("y", function(d) {
-         return yScale(d.Role);
-       })
-       .attr('width', function(d){
+      .attr('width', function(d){
          var taskDuration = moment(moment(d.TimeStart).diff(minDate));
          var barLength = moment(d.TimeEnd.diff(taskDuration));
-console.log('TimeStart',d.TimeStart.toDate(),'TimeEnd',d.TimeEnd.toDate(),'moment',moment().toDate());
-console.log('durations', moment(d.TimeStart).diff(minDate,'years',true), 'new dates', barLength.toDate());
          return xScale(barLength.toDate());
-       })
-       .attr('height',20)
-       .attr('fill', function (d, i) {
-         return colorScale(i);
-       })
-      .style("stroke", 'black')
-      .style("stroke-width", 0.25);
-       ;
+      });
 
     yAxisEl.selectAll(".tick text")
-          .call(wrap, 100);//------------------replace with yscale ordinal range
+          .call(wrap, (margin.left * 0.9));//------------------replace with yscale ordinal range
 
     // // specify new properties for the line
     // line.x(function(d) { return xScale(d.year); })
