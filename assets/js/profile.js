@@ -4,11 +4,12 @@ $(window).ready(function () {
     preloader.remove();
 });
 
-
 var data = d3.csv("profile.csv", function(d){
 
   var roleIDArr = [], jobLvlData = [];
   data = d.map(function (inner_d) {
+    //initialize profiletext counter
+
     // Only get rows with experience data
     if (inner_d.Type=='Experience') {
 
@@ -29,12 +30,30 @@ var data = d3.csv("profile.csv", function(d){
         jobLvlData.push(indivJob);
         // console.log('single data', inner_d, 'newroles', roleIDArr);
       }
+    } else if (inner_d.Type=='About') {
+      $('#about').html("<p class='text-center'>" + inner_d.Desc + "</p>");
+    } else if (inner_d.Type=='Links') {
+      //create nested flexbox for profile links
+      var profileText = "<div class='flexItem'>\
+                          <a class='flexContainer' href='" + inner_d.URL + "'>\
+                            <p class='flexItem'><img src='assets/img/links/" + inner_d.Firm + ".png' height='20px' width='20px'></p>\
+                              <p class='flexItem'>" + inner_d.Role + "</p>\
+                          </a>\
+                        </div>";
+      $('#profileLinks').append(profileText);
+    } else if (inner_d.Type=='Technical Skills') {
+      if (inner_d.Level=='Expert') {
+
+      } else if (inner_d.Level=='Proficient') {
+
+      } else if (inner_d.Level=='Working') {
+
+      }
     }
+
   });
 
-  // experienceChart(jobLvlData);
   displayExperience(jobLvlData);
-  // console.log('jobLvlData', jobLvlData);
 });
 
 
@@ -45,13 +64,13 @@ function displayExperience( data ) {
   //////////////////////////////////////////////
 
   // Set the dimensions of the canvas / graph
-  var margin = {top: 30, right: 20, bottom: 30, left: 100},
-  		width, // width gets defined below
-      height = 450 - margin.top - margin.bottom;
+  var margin      = {top: 30, right: 20, bottom: 30, left: 100},
+  		width,      // width gets defined below
+      height      = 450 - margin.top - margin.bottom;
 
   // Set the scales ranges
-  var xScale = d3.scaleTime(),
-      yScale = d3.scaleBand().rangeRound([0, height]),
+  var xScale      = d3.scaleTime(),
+      yScale      = d3.scaleBand().rangeRound([0, height]),
       colorScale  = d3.scaleSequential(d3.interpolatePuBuGn);
 
   // Define the axes
@@ -75,7 +94,7 @@ function displayExperience( data ) {
 
   // create element for where elements will be drawn
   var artboard = svg.append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   // Add the X Axis
   var xAxisEl = artboard.append("g")
@@ -86,28 +105,28 @@ function displayExperience( data ) {
   var yAxisEl = artboard.append("g")
     .call(yAxis);
 
-    //Create bars
-    var bars = svg.append("g")
-       .attr("id", "bars")
-       .attr("transform", "translate(100," + (margin.top+margin.bottom) + ")")//-------replace 100 with axis width
-       .selectAll("rect")
-       .data( data )
-       .enter()
-       .append("rect")
-       .attr("x", function (d) {
-         return xScale(minDate);
-       })
-       .attr("y", function(d) {
-         return yScale(d.Role);
-       })
-       .attr('width', 0)
-       .attr('height', (height * .1))
-       .attr('fill', function (d, i) {
-         return colorScale(i);
-       })
-      .style("stroke", 'black')
-      .style("stroke-width", 0.25);
-       ;
+  //Create bars
+  var bars = svg.append("g")
+     .attr("id", "bars")
+     .attr("transform", "translate(100," + (margin.top+margin.bottom) + ")")//-------replace 100 with axis width
+     .selectAll("rect")
+     .data( data )
+     .enter()
+     .append("rect")
+     .attr("x", function (d) {
+       return xScale(minDate);
+     })
+     .attr("y", function(d) {
+       return yScale(d.Role);
+     })
+     .attr('width', 0)
+     .attr('height', (height * .1))
+     .attr('fill', function (d, i) {
+       return colorScale(i);
+     })
+    .style("stroke", 'black')
+    .style("stroke-width", 0.25);
+    ;
 
   // call this once to draw the chart initially
   drawChart();

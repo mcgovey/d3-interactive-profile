@@ -6,7 +6,6 @@
     <title>Kevin McGovern's Profile</title>
     <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="assets/css/bootstrap-flatly.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="assets/css/temp_img.css" media="screen" />
     <style>
     /* ==========================================================================
     Inline critical CSS to increase performance on page load times
@@ -79,7 +78,36 @@
     .skillLink {
         color: black;
     }
+    #innerDocNav{
+      margin: 30px 0;
+      border: #bbb 1px solid;
+      border-radius: 10px;
+    }
+    .skillsHeaders {
+      margin-left: 20px;
+    }
+    .flexContainer {
+      display:                 flex;
+      display:                 -webkit-flex; /* Safari 8 */
+      flex-wrap:               wrap;
+      -webkit-flex-wrap:       wrap;         /* Safari 8 */
+      justify-content:         center;
+      -webkit-justify-content: center;       /* Safari 8 */
+      margin: 15px 0;
+    }
+    .flexItem{
+      margin: auto;  /* Magic! */
+    }
+    /* Small screens */
+    @media all and (max-width: 500px) {
+      .flexContainer {
+        /* On small screens, we are no longer using row direction but column */
+        flex-direction:        column;
+        justify-content:       center;
+      }
+    }
     </style>
+    <link rel="stylesheet" type="text/css" href="assets/css/temp_img.css" media="screen" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 
   </head>
@@ -100,19 +128,29 @@
               <div class="circleImg" id="nay"></div>
               <h1 class="text-center">Kevin McGovern</h1>
               <h4 class="text-center">Data Visualization Expert</h4>
-              <div id="innerDocNav" "col-md-12 text-center">
-                <ul class="nav nav-pills center-pills">
-                  <li class="active"><a href="#sectHeader">Summary</a></li>
-                  <li><a href="#sectSkills">Skills</a></li>
-                  <li><a href="#sectExperience">Experience</a></li>
-                  <li><a href="#sectProjects">Projects</a></li>
+              <div id="profileLinks" class="flexContainer"></div>
+
+
+              <div id="innerDocNav">
+                <ul class="nav nav-pills center-pills flexContainer">
+                  <li class="active flexItem"><a href="#about"><h4>About Kevin</h4></a></li>
+                  <li class="flexItem"><a href="#sectSkills"><h4>Skills and Interests</h4></a></li>
+                  <li class="flexItem"><a href="#sectExperience"><h4>Professional Experience</h4></a></li>
+                  <li class="flexItem"><a href="#sectProjects"><h4>Other Projects</h4></a></li>
                 </ul>
               </div>
+              <div id="about"></div>
             </div>
 
             <div id="sectSkills">
               <h3 class="text-center">Skills and Interests</h3>
-              <h4 class="text-center">Expert</h4>
+
+              <h4 class="skillsHeaders">Interests</h4>
+              <p>
+
+              </p>
+              <hr class="sep">
+              <h4 class="skillsHeaders">Expert</h4>
               <hr class="sep">
               <div class="row">
                 <div class="col-md-4 col-xs-12">
@@ -131,6 +169,10 @@
                   </p>
                 </div>
               </div>
+              <h4 class="skillsHeaders">Proficient Knowledge</h4>
+              <hr class="sep">
+              <h4 class="skillsHeaders">Working Knowledge</h4>
+              <hr class="sep">
             </div>
             <!-- <hr class="sep"> -->
 
