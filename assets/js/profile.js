@@ -6,7 +6,7 @@ $(window).ready(function () {
 
 var data = d3.csv("profile.csv", function(d){
 
-  var roleIDArr = [], jobLvlData = [];
+  var roleIDArr = [], jobLvlData = [], skillsData = [];
   data = d.map(function (inner_d) {
     //initialize profiletext counter
 
@@ -15,6 +15,7 @@ var data = d3.csv("profile.csv", function(d){
 
       // Create an array of objects with only the length, experience, company, and role type
       // Check if the role ID does not exist in the array yet
+      // If it is not been found yet, store it in an array, create a list group box and store the first desc
       if ($.inArray(+inner_d.RoleID, roleIDArr) == -1) {
         //add the role to the array t
         roleIDArr.push(+inner_d.RoleID);
@@ -28,7 +29,21 @@ var data = d3.csv("profile.csv", function(d){
         }
 
         jobLvlData.push(indivJob);
-        // console.log('single data', inner_d, 'newroles', roleIDArr);
+
+        // var listGroupHeader = "<a href='#' class='list-group-item' id='cv" + inner_d.Role + "Details'>\
+        //                         <h4 class='list-group-item-heading'>" + inner_d.Firm + ": " + inner_d.Role + "</h4>\
+        //                         <p class='list-group-item-text'>" + inner_d.Desc + "</p>\
+        //                       </a>";
+        var listGroupHeader = "<li class='list-group-item active'>" + inner_d.Firm + ": " + inner_d.Role + "</li>\
+                                <li class='list-group-item'>" + inner_d.Desc + "</li>";
+
+        $('#cvDetails').append(listGroupHeader);
+
+      } else {
+        // If the selected role has already been found, add it to the specified list group item
+        let listGroupItem = "<li class='list-group-item'>" + inner_d.Desc + "</li>";
+
+        $('#cvDetails').append(listGroupItem);
       }
     } else if (inner_d.Type=='About') {
       $('#about').html("<p class='text-center'>" + inner_d.Desc + "</p>");
@@ -42,13 +57,7 @@ var data = d3.csv("profile.csv", function(d){
                         </div>";
       $('#profileLinks').append(profileText);
     } else if (inner_d.Type=='Technical Skills') {
-      if (inner_d.Level=='Expert') {
-
-      } else if (inner_d.Level=='Proficient') {
-
-      } else if (inner_d.Level=='Working') {
-
-      }
+      //skillsData
     }
 
   });
