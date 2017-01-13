@@ -29,25 +29,25 @@ Certification,QlikView,Designer,,,,,,,,,
 Certification,QlikView,Developer,,,,,,,,,
 Certification,Tableau,Qualified Associate,,,,,,,,,
 Certification,Metric Insights,Certified,,,,,,,,,
-Technical Skills,QlikView,Data Visualization,,,,,,Expert,,10,9
-Technical Skills,Qlik Sense,Data Visualization,,,,,,Expert,,10,9
-Technical Skills,Tableau,Data Visualization,,,,,,Expert,,9,3
-Technical Skills,D3.js,Data Visualization,,,,,,Proficient,,7,9
-Technical Skills,Looker,Data Visualization,,,,,,Proficient,,5,
-Technical Skills,HTML5,Web Technology,,,,,,Proficient,,7,
-Technical Skills,JavaScript,Web Technology,,,,,,Proficient,,8,
-Technical Skills,Meteor.js,Web Technology,,,,,,Proficient,,6,
-Technical Skills,React,Web Technology,,,,,,Proficient,,5,
-Technical Skills,Angular,Web Technology,,,,,,Proficient,,5,
-Technical Skills,Oracle SQL,Data Storage and Retrieval,,,,,,Proficient,,9,
-Technical Skills,Microsoft SQL Server,Data Storage and Retrieval,,,,,,Proficient,,9,
-Technical Skills,MySQL,Data Storage and Retrieval,,,,,,Proficient,,8,
-Technical Skills,MongoDB,Data Storage and Retrieval,,,,,,Proficient,,7,
-Technical Skills,PostgreSQL,Data Storage and Retrieval,,,,,,Proficient,,6,
-Technical Skills,Pentaho BI,Data Processing,,,,,,Proficient,,5,
-Technical Skills,Alteryx,Data Processing,,,,,,Proficient,,8,
-Technical Skills,R,Data Science,,,,,,Working,,4,6
-Technical Skills,Python,Data Science,,,,,,Working,,4,7
+Technical Skills,QlikView,data visualization,1,,,,,Expert,,10,9
+Technical Skills,Qlik Sense,data visualization,1,,,,,Expert,,10,9
+Technical Skills,Tableau,data visualization,1,,,,,Expert,,9,3
+Technical Skills,D3.js,data visualization,1,,,,,Proficient,,7,9
+Technical Skills,Looker,data visualization,1,,,,,Proficient,,5,
+Technical Skills,HTML5,web,2,,,,,Proficient,,7,
+Technical Skills,JavaScript,web,2,,,,,Proficient,,8,
+Technical Skills,Meteor.js,web,2,,,,,Proficient,,6,
+Technical Skills,React,web,2,,,,,Proficient,,5,
+Technical Skills,Angular,web,2,,,,,Proficient,,5,
+Technical Skills,Oracle SQL,data storage and retrieval,3,,,,,Proficient,,9,
+Technical Skills,Microsoft SQL Server,data storage and retrieval,3,,,,,Proficient,,9,
+Technical Skills,MySQL,data storage and retrieval,3,,,,,Proficient,,8,
+Technical Skills,MongoDB,data storage and retrieval,3,,,,,Proficient,,7,
+Technical Skills,PostgreSQL,data storage and retrieval,3,,,,,Proficient,,6,
+Technical Skills,Pentaho BI,data processing,4,,,,,Proficient,,5,
+Technical Skills,Alteryx,data processing,4,,,,,Proficient,,8,
+Technical Skills,R,data science,5,,,,,Working,,4,6
+Technical Skills,Python,data science,5,,,,,Working,,4,7
 Awards,Qlik,Placed at Web Development Hackathon,,,,,,,,,
 Awards,Tableau,Viz of the Day,,,,,,,,,
 Awards,Tableau,Hacker Month Featured Post,,,,,,,,,

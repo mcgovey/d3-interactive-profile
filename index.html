@@ -109,6 +109,18 @@
     #cvDetails li.list-group-item.active {
       margin-top: 10px;
     }
+    div.tooltip { 
+      position: absolute;     
+      text-align: center;     
+      width: 150px;          
+      /*height: 28px;         */
+      padding: 2px;       
+      font: 12px sans-serif;    
+      background: lightgrey; 
+      border: 0px;    
+      border-radius: 8px;     
+      pointer-events: none;     
+    }
     </style>
     <link rel="stylesheet" type="text/css" href="assets/css/temp_img.css" media="screen" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
@@ -148,12 +160,29 @@
             <div id="sectSkills">
               <h3 class="text-center">Skills and Interests</h3>
 
-              <h4 class="skillsHeaders">Interests</h4>
-              <p>
-
-              </p>
+              <h4 class="skillsHeaders">Technologies Kevin is Most Interested In</h4>
+              <div class="row">
+                <div class="col-md-4 col-xs-12">
+                  <p class="text-center">
+                    <a class="skillLink" href="#">D3.js</a>
+                  </p>
+                </div>
+                <div class="col-md-4 col-xs-12">
+                  <p class="text-center">
+                    <a class="skillLink" href="#">JavaScript</a>
+                  </p>
+                </div>
+                <div class="col-md-4 col-xs-12">
+                  <p class="text-center">
+                    <a class="skillLink" href="#">SQL</a>
+                  </p>
+                </div>
+              </div>
               <hr class="sep">
-              <h4 class="skillsHeaders">Expert</h4>
+
+              <h4 class="skillsHeaders">Skills</h4>
+              <div id="skillsVizDiv"></div>
+              <!-- <h4 class="skillsHeaders">Expert</h4>
               <hr class="sep">
               <div class="row">
                 <div class="col-md-4 col-xs-12">
@@ -175,7 +204,7 @@
               <h4 class="skillsHeaders">Proficient Knowledge</h4>
               <hr class="sep">
               <h4 class="skillsHeaders">Working Knowledge</h4>
-              <hr class="sep">
+              <hr class="sep"> -->
             </div>
             <!-- <hr class="sep"> -->
 
@@ -200,40 +229,46 @@
   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
   crossorigin="anonymous"></script>
 
-  <!-- Library JS -->
-  <!-- Selection D3 Lib -->
-  <script src="https://d3js.org/d3-selection.v1.min.js"></script>
-
-  <script src="https://d3js.org/d3-collection.v1.min.js"></script>
-  <script src="https://d3js.org/d3-dispatch.v1.min.js"></script>
-  <!-- D3 CSV load -->
-  <script src="https://d3js.org/d3-dsv.v1.min.js"></script>
-  <script src="https://d3js.org/d3-request.v1.min.js"></script>
-
-  <!-- D3 Axis -->
-  <script src="https://d3js.org/d3-axis.v1.min.js"></script>
-
   <!-- Moment.js for date handling -->
   <script src="https://momentjs.com/downloads/moment.js"></script>
 
+  <!-- D3 Library JS -->
+  <script src="//d3js.org/d3.v4.min.js"></script>
+
+  <!-- Old library loading -->
+  <!-- Selection D3 Lib -->
+  <!-- <script src="https://d3js.org/d3-selection.v1.min.js"></script> -->
+
+  <!-- <script src="https://d3js.org/d3-collection.v1.min.js"></script> -->
+  <!-- <script src="https://d3js.org/d3-dispatch.v1.min.js"></script> -->
+  <!-- D3 CSV load -->
+  <!-- <script src="https://d3js.org/d3-dsv.v1.min.js"></script> -->
+  <!-- <script src="https://d3js.org/d3-request.v1.min.js"></script> -->
+
+  <!-- D3 Axis -->
+  <!-- <script src="https://d3js.org/d3-axis.v1.min.js"></script> -->
+
   <!-- D3 Scale Lib -->
-  <script src="https://d3js.org/d3-array.v1.min.js"></script>
+  <!-- <script src="https://d3js.org/d3-array.v1.min.js"></script> -->
   <!-- Also needs collection from above -->
-  <script src="https://d3js.org/d3-color.v1.min.js"></script>
-  <script src="https://d3js.org/d3-format.v1.min.js"></script>
-  <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
-  <script src="https://d3js.org/d3-time.v1.min.js"></script>
-  <script src="https://d3js.org/d3-time-format.v2.min.js"></script>
-  <script src="https://d3js.org/d3-scale.v1.min.js"></script>
+  <!-- <script src="https://d3js.org/d3-color.v1.min.js"></script> -->
+  <!-- <script src="https://d3js.org/d3-format.v1.min.js"></script> -->
+  <!-- <script src="https://d3js.org/d3-interpolate.v1.min.js"></script> -->
+  <!-- <script src="https://d3js.org/d3-time.v1.min.js"></script> -->
+  <!-- <script src="https://d3js.org/d3-time-format.v2.min.js"></script> -->
+  <!-- <script src="https://d3js.org/d3-scale.v1.min.js"></script> -->
   <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 
   <!-- D3 Transitions -->
-  <script src="https://d3js.org/d3-ease.v1.min.js"></script>
-  <script src="https://d3js.org/d3-timer.v1.min.js"></script>
-  <script src="https://d3js.org/d3-transition.v1.min.js"></script>
+  <!-- <script src="https://d3js.org/d3-ease.v1.min.js"></script> -->
+  <!-- <script src="https://d3js.org/d3-timer.v1.min.js"></script> -->
+  <!-- <script src="https://d3js.org/d3-transition.v1.min.js"></script> -->
+
+
 
   <!-- Local js -->
   <script src="assets/js/bootstrap.min.js"></script>
+  <script src="assets/js/drawSkills.js"></script>
   <script src="assets/js/profile.js"></script>
   </body>
 </html>

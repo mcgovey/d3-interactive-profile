@@ -30,10 +30,7 @@ var data = d3.csv("profile.csv", function(d){
 
         jobLvlData.push(indivJob);
 
-        // var listGroupHeader = "<a href='#' class='list-group-item' id='cv" + inner_d.Role + "Details'>\
-        //                         <h4 class='list-group-item-heading'>" + inner_d.Firm + ": " + inner_d.Role + "</h4>\
-        //                         <p class='list-group-item-text'>" + inner_d.Desc + "</p>\
-        //                       </a>";
+        // add items for details related to a role (if the role hasn't been created yet)
         var listGroupHeader = "<li class='list-group-item active'>" + inner_d.Firm + ": " + inner_d.Role + "</li>\
                                 <li class='list-group-item'>" + inner_d.Desc + "</li>";
 
@@ -57,12 +54,23 @@ var data = d3.csv("profile.csv", function(d){
                         </div>";
       $('#profileLinks').append(profileText);
     } else if (inner_d.Type=='Technical Skills') {
-      //skillsData
+        var indivSkill = {
+          'cluster'     : inner_d.Firm,
+          'clusterCat'  : inner_d.Role,
+          'clusterID'   : +inner_d.RoleID,
+          'clusterVal'  : +inner_d.Expertise,
+          'Interest'    : +inner_d.Interest,
+          'clusterLvl'  : inner_d.Level
+        }
+
+        skillsData.push(indivSkill);
     }
+
 
   });
 
-  displayExperience(jobLvlData);
+  displaySkills( skillsData );
+  displayExperience( jobLvlData );
 });
 
 
@@ -99,7 +107,7 @@ function displayExperience( data ) {
 		d3.max(data, function(d) { return d.TimeEnd.toDate(); })
 	]);
   yScale.domain(data.map(function (d) { return d.Role; }));
-  colorScale.domain([0, d3.max(data, function(d, i) { return i; })]);
+  colorScale.domain([-1, d3.max(data, function(d, i) { return i; })]);
 
   // create element for where elements will be drawn
   var artboard = svg.append("g")
