@@ -1,6 +1,4 @@
 function displaySkills( data ) {
-	console.log('calling all ', data);
-
 	let margin = {top: 100, right: 100, bottom: 100, left: 100};
 
 	let width = 960,

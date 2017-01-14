@@ -111,21 +111,24 @@ function displayExperience( data ) {
 
   // create element for where elements will be drawn
   var artboard = svg.append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    // .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    // .attr("transform", "translate(0," + margin.top + ")");
 
   // Add the X Axis
   var xAxisEl = artboard.append("g")
+    .attr("class","xAxis gantt")
     .attr("transform", "translate(0," + height + ")");
 
   // Add the Y Axis
   // we aren't resizing height in this demo so the yAxis stays static, we don't need to call this every resize
   var yAxisEl = artboard.append("g")
+    .attr("class","yAxis gantt")
     .call(yAxis);
 
   //Create bars
   var bars = svg.append("g")
      .attr("id", "bars")
-     .attr("transform", "translate(100," + (margin.top+margin.bottom) + ")")//-------replace 100 with axis width
+     .attr("transform", "translate(0," + (margin.top+margin.bottom) + ")")
      .selectAll("rect")
      .data( data )
      .enter()
@@ -137,7 +140,7 @@ function displayExperience( data ) {
        return yScale(d.Role);
      })
      .attr('width', 0)
-     .attr('height', (height * .1))
+     .attr('height', (height * .115))
      .attr('fill', function (d, i) {
        return colorScale(i);
      })
@@ -152,8 +155,15 @@ function displayExperience( data ) {
   // Drawing ///////////////////////////////////
   //////////////////////////////////////////////
   function drawChart() {
+
     // reset the width
-    width = parseInt(d3.select("div#cvGannt").style('width'), 10) - margin.left - margin.right;
+    divWidth      = parseInt(d3.select("div#cvGannt").style('width'), 10),
+      margin.left = divWidth <= 480 ? 0 : 100,
+      margin.top  = divWidth <= 480 ? 0 : 30,
+      width       = divWidth - margin.left - margin.right;
+
+console.log('divWidth',divWidth,'margin.left',margin.left,'width',width);
+    artboard.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
     // set the svg dimensions
     svg.attr("width", width + margin.left + margin.right);
@@ -173,26 +183,31 @@ function displayExperience( data ) {
       .ease(d3.easeLinear);
 
     //Create bars
-    bars.transition(t)
-      .delay(function(d, i) { return i * 500; })
-      .attr("x", function (d) {
-         return xScale(d.TimeStart.toDate());
-       })
-      .attr('width', function(d){
-         var taskDuration = moment(moment(d.TimeStart).diff(minDate));
-         var barLength = moment(d.TimeEnd.diff(taskDuration));
-         return xScale(barLength.toDate());
-      });
+    bars.attr("transform", "translate(" + margin.left + "," + (margin.top-30) + ")")
+      .transition(t)
+        .delay(function(d, i) { return i * 500; })
+        .attr("x", function (d) {
+           return xScale(d.TimeStart.toDate());
+         })
+        .attr('width', function(d){
+           var taskDuration = moment(moment(d.TimeStart).diff(minDate));
+           var barLength = moment(d.TimeEnd.diff(taskDuration));
+           return xScale(barLength.toDate());
+        })
+     ;
 
     yAxisEl.selectAll(".tick text")
-          .call(wrap, (margin.left * 0.9));//------------------replace with yscale ordinal range
+          .call(wrap, (margin.left * 0.9));
 
-    // // specify new properties for the line
-    // line.x(function(d) { return xScale(d.year); })
-    //   .y(function(d) { return yScale(d.population); });
+    //change xaxis and translations if width below "small" screen size breakpoint
+    if (width<=480) {
+      yAxisEl.transition(t)
+        .style("opacity",0);
+    } else {
+      yAxisEl.transition(t)
+        .style("opacity",1);
+    }
 
-    // // draw the path based on the line created above
-    // path.attr('d', line);
   }
 
 
