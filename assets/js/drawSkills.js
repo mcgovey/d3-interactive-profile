@@ -1,25 +1,25 @@
 function displaySkills( data ) {
 	let margin = {top: 100, right: 100, bottom: 100, left: 100};
 
-	let width = 960,
+	let width,// width defined below
 	    height = 500,
 	    padding = 1.5, // separation between same-color circles
 	    clusterPadding = 6, // separation between different-color circles
 	    maxRadius = height*0.1;
 
-	let n = 200, // total number of nodes
-	    m = 10, // number of distinct clusters
+	let n = d3.max(data, function(d, i) { return i; }), // total number of nodes
+	    m = d3.max(data, function(d) { return d.clusterID; }), // number of distinct clusters
 	    // z = d3.scaleOrdinal(d3.schemeCategory20),
 	    colorScale	= d3.scaleSequential(d3.interpolateYlGnBu)
-	    					.domain([0, d3.max(data, function(d) { return d.clusterID; })]),
+	    					.domain([0, m]),
 	    clusters = new Array(m);
 
 	let svg = d3.select('div#skillsVizDiv')
 	    .append('svg')
 	    .attr('height', height)
-	    .attr('width', width)
+	    // .attr('width', width)
 	    .append('g')
-	    .attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')');
+	    .attr('transform', 'translate(0,' + (height / 2) + ')');
 
 	// Define the div for the tooltip
 	let div = d3.select("div#skillsVizDiv").append("div") 
@@ -57,6 +57,8 @@ function displaySkills( data ) {
 	  .selectAll('.circle')
 	    .data(d => d)
 	  .enter().append('circle')
+
+
 	    .attr('r', (d) => d.r)
 	    .attr('fill', (d) => colorScale(d.clusterVal))
 	    .attr('stroke', 'black')
@@ -89,6 +91,9 @@ function displaySkills( data ) {
 		.force("cluster", clustering)
 		.on("tick", ticked);
 
+	// call this once to initialize
+	drawSkillsChart();
+
 	//////////////////////////////////////////////
 	// Resizing //////////////////////////////////
 	//////////////////////////////////////////////
@@ -97,7 +102,18 @@ function displaySkills( data ) {
 	APP.onResize(drawSkillsChart);
 
 	function drawSkillsChart() {
-		console.log('booooom');
+		width	= parseInt(d3.select("div#skillsVizDiv").style('width'), 10);
+
+console.log('before: width', width, 'svg div', d3.select('div#skillsVizDiv svg g'));
+
+		let svg = d3.select('div#skillsVizDiv svg')
+			.attr('width', width)
+
+		let g 	= svg.select('g')
+			.attr('transform','translate(' + (width / 2) + ',' + (height / 2) + ')'); 
+
+console.log('after: width', width, 'svg div', svg);
+
 	}
 
 	function ticked() {
