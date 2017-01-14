@@ -18,7 +18,8 @@ function displaySkills( data ) {
 	    .append('svg')
 	    .attr('height', height)
 	    .attr('width', width)
-	    .append('g').attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+	    .append('g')
+	    .attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')');
 
 	// Define the div for the tooltip
 	let div = d3.select("div#skillsVizDiv").append("div") 
@@ -87,6 +88,17 @@ function displaySkills( data ) {
 		.force("collide", collide)
 		.force("cluster", clustering)
 		.on("tick", ticked);
+
+	//////////////////////////////////////////////
+	// Resizing //////////////////////////////////
+	//////////////////////////////////////////////
+
+	// redraw chart on resize
+	APP.onResize(drawSkillsChart);
+
+	function drawSkillsChart() {
+		console.log('booooom');
+	}
 
 	function ticked() {
 	  circles

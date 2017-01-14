@@ -162,7 +162,6 @@ function displayExperience( data ) {
       margin.top  = divWidth <= 480 ? 0 : 30,
       width       = divWidth - margin.left - margin.right;
 
-console.log('divWidth',divWidth,'margin.left',margin.left,'width',width);
     artboard.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
     // set the svg dimensions
@@ -200,13 +199,8 @@ console.log('divWidth',divWidth,'margin.left',margin.left,'width',width);
           .call(wrap, (margin.left * 0.9));
 
     //change xaxis and translations if width below "small" screen size breakpoint
-    if (width<=480) {
-      yAxisEl.transition(t)
-        .style("opacity",0);
-    } else {
-      yAxisEl.transition(t)
-        .style("opacity",1);
-    }
+    yAxisEl.transition(t)
+      .style("opacity",(width<=480 ? 0 : 1))
 
   }
 
