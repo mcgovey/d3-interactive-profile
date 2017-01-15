@@ -16,10 +16,10 @@ function displaySkills( data ) {
 
 	let svg = d3.select('div#skillsVizDiv')
 	    .append('svg')
-	    .attr('height', height)
+	    // .attr('height', height)
 	    // .attr('width', width)
 	    .append('g')
-	    .attr('transform', 'translate(0,' + (height / 2) + ')');
+	    // .attr('transform', 'translate(0,' + (height / 2) + ')');
 
 	// Define the div for the tooltip
 	let div = d3.select("div#skillsVizDiv").append("div") 
@@ -38,7 +38,8 @@ function displaySkills( data ) {
 	// add cluster id and radius to array
 	d = {
 	  clusterVal	: forcedCluster,
-	  r 			: scaledRadius,
+	  r 			: +d.clusterVal,//formerly scaledRadius
+	  // rawR			: +d.clusterVal,
 	  cluster 		: d.cluster,
 	  clusterCat   	: d.clusterCat,
 	  clusterLvl	: d.clusterLvl
@@ -57,10 +58,8 @@ function displaySkills( data ) {
 	  .selectAll('.circle')
 	    .data(d => d)
 	  .enter().append('circle')
-
-
-	    .attr('r', (d) => d.r)
-	    .attr('fill', (d) => colorScale(d.clusterVal))
+	    .attr('r', (d) => radiusScale( d.r ))
+	    .attr('fill', (d) => colorScale( d.clusterVal ))
 	    .attr('stroke', 'black')
 	    .attr('stroke-width', 1)
 	    .call(d3.drag()
@@ -102,17 +101,41 @@ function displaySkills( data ) {
 	APP.onResize(drawSkillsChart);
 
 	function drawSkillsChart() {
-		width	= parseInt(d3.select("div#skillsVizDiv").style('width'), 10);
-
-console.log('before: width', width, 'svg div', d3.select('div#skillsVizDiv svg g'));
+		// resize the svg
+		width	= parseInt(d3.select("div#skillsVizDiv").style('width'), 10),
+		height	= width <= 480 ? 300 : 500;
 
 		let svg = d3.select('div#skillsVizDiv svg')
 			.attr('width', width)
+			.attr('height', height);
 
 		let g 	= svg.select('g')
 			.attr('transform','translate(' + (width / 2) + ',' + (height / 2) + ')'); 
 
-console.log('after: width', width, 'svg div', svg);
+		// resize the circles
+		let maxRadius = width * 0.075;
+
+		// reset the range on the scale
+		radiusScale.range([4, maxRadius]);
+
+
+		// create transition
+		var t = d3.transition()
+			.duration(1500)
+			.ease(d3.easeLinear);
+
+		// resize the circles
+		circles.transition(t)
+			.attr('r', (d) => radiusScale( d.r ));
+
+		// create the clustering/collision force simulation
+		let simulation = d3.forceSimulation(nodes)
+			.velocityDecay(0.2)
+			.force("x", d3.forceX().strength(.0005))
+			.force("y", d3.forceY().strength(.0005))
+			.force("collide", collide)
+			.force("cluster", clustering)
+			.on("tick", ticked);
 
 	}
 
@@ -148,7 +171,7 @@ console.log('after: width', width, 'svg div', svg);
 	    var x = d.x - cluster.x,
 	        y = d.y - cluster.y,
 	        l = Math.sqrt(x * x + y * y),
-	        r = d.r + cluster.r;
+	        r = radiusScale( d.r ) + radiusScale( cluster.r );
 	    if (l !== r) {
 	      l = (l - r) / l * alpha;
 	      d.x -= x *= l;
@@ -166,7 +189,7 @@ console.log('after: width', width, 'svg div', svg);
 		    .addAll(nodes);
 
 		nodes.forEach(function(d) {
-		  var r = d.r + maxRadius + Math.max(padding, clusterPadding),
+		  var r = radiusScale( d.r ) + maxRadius + Math.max(padding, clusterPadding),
 		      nx1 = d.x - r,
 		      nx2 = d.x + r,
 		      ny1 = d.y - r,
@@ -177,7 +200,7 @@ console.log('after: width', width, 'svg div', svg);
 		      var x = d.x - quad.data.x,
 		          y = d.y - quad.data.y,
 		          l = Math.sqrt(x * x + y * y),
-		          r = d.r + quad.data.r + (d.clusterVal === quad.data.clusterVal ? padding : clusterPadding);
+		          r = radiusScale( d.r ) + radiusScale( quad.data.r ) + (d.clusterVal === quad.data.clusterVal ? padding : clusterPadding);
 		      if (l < r) {
 		        l = (l - r) / l * alpha;
 		        d.x -= x *= l;
