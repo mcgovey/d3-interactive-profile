@@ -59,7 +59,7 @@ var data = d3.csv("profile.csv", function(d){
           'clusterCat'  : inner_d.Role,
           'clusterID'   : +inner_d.RoleID,
           'clusterVal'  : +inner_d.Expertise,
-          'Interest'    : +inner_d.Interest,
+          'linkFlag'    : +inner_d.Interest,
           'clusterLvl'  : inner_d.Level
         }
 

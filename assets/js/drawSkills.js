@@ -1,4 +1,35 @@
 function displaySkills( data ) {
+	// ---------------------------------------------
+	// add items to the interests section
+	// ---------------------------------------------
+	let interestsData = data.map(function (inner_d) {
+		if (data.linkFlag==1) {
+console.log('inner_d',inner_d);
+			return inner_d;
+		}
+	});
+console.log('interestsData',interestsData);
+
+	let link = d3.select('div#skillsInterestsRow')
+		.data(interestsData)
+		.enter()
+		.append('div');
+
+	// // link selection and highlighting
+	// d3.selectAll('.skillLink').on("click", function () {
+	// 	circles.
+	// <div class="col-md-4 col-xs-12">
+	// <p class="text-center">
+	// <a class="skillLink" href="#skillsVizDiv">D3.js</a>
+	// </p>
+	// </div>
+	// 	console.log('I was clicked, here is my data',d);
+	// });
+console.log('interests link', link);
+
+	// ---------------------------------------------
+	// create the bubble chart
+	// ---------------------------------------------
 	let margin = {top: 100, right: 100, bottom: 100, left: 100};
 
 	let width,// width defined below
@@ -16,10 +47,7 @@ function displaySkills( data ) {
 
 	let svg = d3.select('div#skillsVizDiv')
 	    .append('svg')
-	    // .attr('height', height)
-	    // .attr('width', width)
 	    .append('g')
-	    // .attr('transform', 'translate(0,' + (height / 2) + ')');
 
 	// Define the div for the tooltip
 	let div = d3.select("div#skillsVizDiv").append("div") 
@@ -100,6 +128,9 @@ function displaySkills( data ) {
 	// redraw chart on resize
 	APP.onResize(drawSkillsChart);
 
+	//-----------------------------------------------
+	// function to redraw the chart on resize
+	//-----------------------------------------------
 	function drawSkillsChart() {
 		// resize the svg
 		width	= parseInt(d3.select("div#skillsVizDiv").style('width'), 10),
