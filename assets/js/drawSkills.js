@@ -1,33 +1,5 @@
 function displaySkills( data ) {
 	// ---------------------------------------------
-	// add items to the interests section
-	// ---------------------------------------------
-	let interestsData = data.map(function (inner_d) {
-		if (data.linkFlag==1) {
-console.log('inner_d',inner_d);
-			return inner_d;
-		}
-	});
-console.log('interestsData',interestsData);
-
-	let link = d3.select('div#skillsInterestsRow')
-		.data(interestsData)
-		.enter()
-		.append('div');
-
-	// // link selection and highlighting
-	// d3.selectAll('.skillLink').on("click", function () {
-	// 	circles.
-	// <div class="col-md-4 col-xs-12">
-	// <p class="text-center">
-	// <a class="skillLink" href="#skillsVizDiv">D3.js</a>
-	// </p>
-	// </div>
-	// 	console.log('I was clicked, here is my data',d);
-	// });
-console.log('interests link', link);
-
-	// ---------------------------------------------
 	// create the bubble chart
 	// ---------------------------------------------
 	let margin = {top: 100, right: 100, bottom: 100, left: 100};
@@ -86,6 +58,7 @@ console.log('interests link', link);
 	  .selectAll('.circle')
 	    .data(d => d)
 	  .enter().append('circle')
+	  	.classed('skillCircle', true)
 	    .attr('r', (d) => radiusScale( d.r ))
 	    .attr('fill', (d) => colorScale( d.clusterVal ))
 	    .attr('stroke', 'black')
@@ -95,19 +68,10 @@ console.log('interests link', link);
 	        .on("drag", dragged)
 	        .on("end", dragended))
 	    // add tooltips to each circle
-	    .on("mouseover", function(d) {
-	        div.transition()    
-	            .duration(200)    
-	            .style("opacity", .9);    
-	        div .html( d.cluster+ ", a " + d.clusterCat + " technology, represents " + (d.clusterLvl.charAt(0) == 'E' ? 'an ' : 'a ') + d.clusterLvl + " skill")  
-	            .style("left", (d3.event.pageX) + "px")   
-	            .style("top", (d3.event.pageY - 28) + "px");  
-	        })          
-	    .on("mouseout", function(d) {   
-	        div.transition()    
-	            .duration(500)    
-	            .style("opacity", 0); 
-	    });
+	    .on("mouseover", tooltipStart)          
+	    .on("mouseout", tooltipEnd);
+
+
 
 	// create the clustering/collision force simulation
 	let simulation = d3.forceSimulation(nodes)
@@ -119,19 +83,19 @@ console.log('interests link', link);
 		.on("tick", ticked);
 
 	// call this once to initialize
-	drawSkillsChart();
+	resizeSkillsChart();
 
 	//////////////////////////////////////////////
 	// Resizing //////////////////////////////////
 	//////////////////////////////////////////////
 
 	// redraw chart on resize
-	APP.onResize(drawSkillsChart);
+	APP.onResize(resizeSkillsChart);
 
 	//-----------------------------------------------
 	// function to redraw the chart on resize
 	//-----------------------------------------------
-	function drawSkillsChart() {
+	function resizeSkillsChart() {
 		// resize the svg
 		width	= parseInt(d3.select("div#skillsVizDiv").style('width'), 10),
 		height	= width <= 480 ? 300 : 500;
@@ -144,7 +108,7 @@ console.log('interests link', link);
 			.attr('transform','translate(' + (width / 2) + ',' + (height / 2) + ')'); 
 
 		// resize the circles
-		let maxRadius = width * 0.075;
+		let maxRadius = width * 0.07;
 
 		// reset the range on the scale
 		radiusScale.range([4, maxRadius]);
@@ -192,6 +156,36 @@ console.log('interests link', link);
 		if (!d3.event.active) simulation.alphaTarget(0);
 		d.fx = null;
 		d.fy = null;
+	}
+
+	function tooltipStart(d) {
+		div.transition()
+			.duration(200)
+			.style("opacity", .9);
+		div .html( d.cluster+ ", a " + d.clusterCat + " technology, represents " + (d.clusterLvl.charAt(0) == 'E' ? 'an ' : 'a ') + d.clusterLvl + " skill")
+			.style("left", (d3.event.pageX) + "px")
+			.style("top", (d3.event.pageY - 28) + "px");
+	}
+
+	function tooltipLinkStart(d) {
+		// set width and height of tooltip positioning
+		width	= parseInt(d3.select("div#skillsVizDiv").style('width'), 10) / 2,
+		height	= $("div#skillsVizDiv svg").offset().top + (width <= 480 ? 150 : 250);
+
+		// unhide the dive used for the tooltip
+		div.transition()
+			.duration(200)
+			.style("opacity", .9);
+		// add text to tooltip
+		div .html( d.cluster+ ", a " + d.clusterCat + " technology, represents " + (d.clusterLvl.charAt(0) == 'E' ? 'an ' : 'a ') + d.clusterLvl + " skill")
+			.style("left", (width) + "px")
+			.style("top", (height) + "px");
+	}
+
+	function tooltipEnd(d) {
+		div.transition()
+			.duration(500)
+			.style("opacity", 0);
 	}
 
 	// These are implementations of the custom forces.
@@ -246,5 +240,46 @@ console.log('interests link', link);
 	}
 
 
-	// });
+	// ---------------------------------------------
+	// add items to the interests section
+	// ---------------------------------------------
+
+	let interestsData = data.filter(function (item) {
+		return item.linkFlag==1;
+	});
+
+	let intDiv 	= d3.select('div#skillsInterestsRow').selectAll('div')
+		.data(interestsData)
+		.enter()
+		.append('div')
+			.classed('col-md-4', true)
+			.classed('col-xs-12', true)
+	let intP 	= intDiv.append('p')
+		.classed('text-center', true);
+
+	let link 	= intP.append('a')
+		.classed('skillLink', true)
+		.attr('href', '#skillsVizDiv')
+		.html(function (d) {
+			return d.cluster;
+		})
+		.on("click", function (d) {
+			circles.filter(function (p) {
+					return d.cluster==p.cluster;
+				})
+				.transition()
+					.duration(1500)
+					.on('start',tooltipLinkStart)
+				    .attr('stroke-width', 10)
+				.transition()
+					.delay(5000)
+					.duration(1500)
+				    .attr('stroke-width', 1)
+					.on('start', function () {
+						div.transition()
+							.duration(1500)
+							.style("opacity", 0)
+					})
+				;
+		});
 }
