@@ -31,7 +31,7 @@ var data = d3.csv("profile.csv", function(d){
         jobLvlData.push(indivJob);
 
         // add items for details related to a role (if the role hasn't been created yet)
-        var listGroupHeader = "<li class='list-group-item active'>" + inner_d.Firm + ": " + inner_d.Role + "</li>\
+        var listGroupHeader = "<li class='list-group-item active' id='divDetails_" + inner_d.RoleID + "'>" + inner_d.Firm + ": " + inner_d.Role + "</li>\
                                 <li class='list-group-item'>" + inner_d.Desc + "</li>";
 
         $('#cvDetails').append(listGroupHeader);
@@ -79,6 +79,11 @@ function displayExperience( data ) {
   //////////////////////////////////////////////
   // Chart Config /////////////////////////////
   //////////////////////////////////////////////
+
+  // Define the div for the tooltip
+  let tooltipDiv = d3.select("div#cvGannt").append("div") 
+      .attr("class", "tooltip")       
+      .style("opacity", 0);
 
   // Set the dimensions of the canvas / graph
   var margin      = {top: 30, right: 20, bottom: 30, left: 100},
@@ -132,6 +137,8 @@ function displayExperience( data ) {
      .selectAll("rect")
      .data( data )
      .enter()
+     .append("svg:a")
+     .attr("xlink:href", function(d){return '#divDetails_'+d.RoleID;})
      .append("rect")
      .attr("x", function (d) {
        return xScale(minDate);
@@ -145,8 +152,27 @@ function displayExperience( data ) {
        return colorScale(i);
      })
     .style("stroke", 'black')
-    .style("stroke-width", 0.25);
-    ;
+    .style("stroke-width", 0.25)
+    // add tooltips to each bar
+    .on("mouseover", tooltipStart)          
+    .on("mouseout", tooltipEnd);
+
+
+
+  function tooltipStart(d) {
+    tooltipDiv.transition()
+      .duration(200)
+      .style("opacity", .9);
+    tooltipDiv .html( d.Role+ " at " + d.Firm + " from " + d.TimeStart.format("MMM YYYY") + ' to ' + d.TimeEnd.format("MMM YYYY"))
+      .style("left", (d3.event.pageX) + "px")
+      .style("top", (d3.event.pageY - 28) + "px");
+  }
+
+  function tooltipEnd(d) {
+    tooltipDiv.transition()
+      .duration(500)
+      .style("opacity", 0);
+  }
 
   // call this once to draw the chart initially
   drawChart();
