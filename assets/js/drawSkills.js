@@ -12,7 +12,6 @@ function displaySkills( data ) {
 
 	let n = d3.max(data, function(d, i) { return i; }), // total number of nodes
 	    m = d3.max(data, function(d) { return d.clusterID; }), // number of distinct clusters
-	    // z = d3.scaleOrdinal(d3.schemeCategory20),
 	    colorScale	= d3.scaleSequential(d3.interpolateYlGnBu)
 	    					.domain([0, m]),
 	    clusters = new Array(m);
@@ -26,28 +25,29 @@ function displaySkills( data ) {
 	    .attr("class", "tooltip")       
 	    .style("opacity", 0);
 
+	// define how large radius on bubbles will be
 	let radiusScale = d3.scaleLinear()
 		.domain(d3.extent(data, function(d) { return +d.clusterVal;} ))
 		.range([4, maxRadius]);
 
 	let nodes = data.map((d) => {
-	// scale radius to fit on the screen
-	let scaledRadius  = radiusScale(+d.clusterVal),
-	    forcedCluster = +d.clusterID;
+		// scale radius to fit on the screen
+		let scaledRadius  = radiusScale(+d.clusterVal),
+		    forcedCluster = +d.clusterID;
 
-	// add cluster id and radius to array
-	d = {
-	  clusterVal	: forcedCluster,
-	  r 			: +d.clusterVal,//formerly scaledRadius
-	  // rawR			: +d.clusterVal,
-	  cluster 		: d.cluster,
-	  clusterCat   	: d.clusterCat,
-	  clusterLvl	: d.clusterLvl
-	};
-	// add to clusters array if it doesn't exist or the radius is larger than another radius in the cluster
-	if (!clusters[forcedCluster] || (scaledRadius > clusters[forcedCluster].r)) clusters[forcedCluster] = d;
+		// add cluster id and radius to array
+		d = {
+		  clusterVal	: forcedCluster,
+		  r 			: +d.clusterVal,//formerly scaledRadius
+		  // rawR			: +d.clusterVal,
+		  cluster 		: d.cluster,
+		  clusterCat   	: d.clusterCat,
+		  clusterLvl	: d.clusterLvl
+		};
+		// add to clusters array if it doesn't exist or the radius is larger than another radius in the cluster
+		if (!clusters[forcedCluster] || (scaledRadius > clusters[forcedCluster].r)) clusters[forcedCluster] = d;
 
-	return d;
+		return d;
 	});
 
 
@@ -70,8 +70,6 @@ function displaySkills( data ) {
 	    // add tooltips to each circle
 	    .on("mouseover", tooltipStart)          
 	    .on("mouseout", tooltipEnd);
-
-
 
 	// create the clustering/collision force simulation
 	let simulation = d3.forceSimulation(nodes)

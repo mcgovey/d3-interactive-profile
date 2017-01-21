@@ -49,7 +49,7 @@ var data = d3.csv("profile.csv", function(d){
       //create nested flexbox for profile links
       var profileText = "<div class='flexItem'>\
                           <a class='flexContainer' href='" + inner_d.URL + "'>\
-                            <p class='flexItem'><img src='assets/img/links/" + inner_d.Firm + ".png' height='20px' width='20px'></p>\
+                            <p class='flexItem'><img src='assets/img/links/" + inner_d.Firm.toLowerCase() + ".png' height='20px' width='20px'></p>\
                               <p class='flexItem'>" + inner_d.Role + "</p>\
                           </a>\
                         </div>";
@@ -66,8 +66,7 @@ var data = d3.csv("profile.csv", function(d){
 
         skillsData.push(indivSkill);
     } else if (inner_d.Type=='Side Projects'){
-
-      // add items for details related to a role (if the role hasn't been created yet)
+      // add items for details related to a side project
       let sideProjectDetails = "<a href='" + inner_d.URL + "'><li class='list-group-item active' id='divSideProject_" + inner_d.RoleID + "'>" + inner_d.Role + ": A " + inner_d.Firm + " project</li></a>\
                               <li class='list-group-item'>" + inner_d.Desc + "</li>";
 
@@ -166,6 +165,7 @@ function displayExperience( data ) {
 
 
   function tooltipStart(d) {
+    // create transitions for tooltip
     tooltipDiv.transition()
       .duration(200)
       .style("opacity", .9);
@@ -175,6 +175,7 @@ function displayExperience( data ) {
   }
 
   function tooltipEnd(d) {
+    //hide tooltip
     tooltipDiv.transition()
       .duration(500)
       .style("opacity", 0);
@@ -277,7 +278,7 @@ var APP = (function () {
 	return me;
 })();
 
-
+//function to wrap text for axis
 function wrap(text, width) {
   text.each(function() {
     var text = d3.select(this),
