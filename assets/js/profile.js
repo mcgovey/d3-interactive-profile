@@ -6,6 +6,7 @@ $(window).ready(function () {
 
 var data = d3.csv("profile.csv", function(d){
 
+  // initialize storage arrays
   var roleIDArr = [], jobLvlData = [], skillsData = [];
   data = d.map(function (inner_d) {
     //initialize profiletext counter
@@ -64,9 +65,14 @@ var data = d3.csv("profile.csv", function(d){
         }
 
         skillsData.push(indivSkill);
+    } else if (inner_d.Type=='Side Projects'){
+
+      // add items for details related to a role (if the role hasn't been created yet)
+      let sideProjectDetails = "<a href='" + inner_d.URL + "'><li class='list-group-item active' id='divSideProject_" + inner_d.RoleID + "'>" + inner_d.Role + ": A " + inner_d.Firm + " project</li></a>\
+                              <li class='list-group-item'>" + inner_d.Desc + "</li>";
+
+      $('#sectProjects').append(sideProjectDetails);
     }
-
-
   });
 
   displaySkills( skillsData );
